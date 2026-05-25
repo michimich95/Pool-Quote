@@ -38,7 +38,7 @@ const STEPS = [
   { id: 1, title: "Tipo de Piscina",   subtitle: "Elige tu modelo" },
   { id: 2, title: "Dimensiones",       subtitle: "Selecciona el tamaño" },
   { id: 3, title: "Lámina Interior",   subtitle: "Revestimiento interior" },
-  { id: 4, title: "Madera Exterior",   subtitle: "Revestimiento compuesto" },
+  { id: 4, title: "Acabado Exterior",   subtitle: "Lámina o madera tecnológica" },
   { id: 5, title: "Extras",            subtitle: "Opciones adicionales" },
 ];
 
@@ -66,7 +66,9 @@ export function CustomizationPanel({
   const sizes = poolType ? getSizes(poolType) : [];
   const size = sizes.find((s) => s.id === sizeId);
   const innerFinish = innerFinishes.find((f) => f.id === innerFinishId);
-  const exteriorFinish = exteriorFinishes.find((f) => f.id === exteriorFinishId);
+  const exteriorFinish =
+    exteriorFinishes.find((f) => f.id === exteriorFinishId) ??
+    innerFinishes.find((f) => f.id === exteriorFinishId);
   const availableExtras = poolType
     ? extraOptions.filter((e) => e.availableFor.includes(poolType))
     : [];
@@ -305,6 +307,7 @@ export function CustomizationPanel({
                                     key={f.id}
                                     name={f.name}
                                     color={f.color}
+                                    image={f.image}
                                     price={f.price}
                                     selected={innerFinishId === f.id}
                                     onSelect={() => onInnerFinishChange(f.id)}
@@ -316,18 +319,46 @@ export function CustomizationPanel({
                         </div>
                       )}
 
-                      {/* ── Step 4: Exterior Wood ── */}
+                      {/* ── Step 4: Exterior Finish (Lámina + Madera) ── */}
                       {step.id === 4 && (
-                        <div className="flex gap-4 flex-wrap">
-                          {exteriorFinishes.map((f) => (
-                            <ExteriorSwatch
-                              key={f.id}
-                              name={f.name}
-                              color={f.color}
-                              selected={exteriorFinishId === f.id}
-                              onSelect={() => onExteriorFinishChange(f.id)}
-                            />
+                        <div className="space-y-5">
+                          {byCollection.map(({ name: col, finishes }) => (
+                            <div key={col}>
+                              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                                {col}
+                              </p>
+                              <div className="flex flex-wrap gap-3">
+                                {finishes.map((f) => (
+                                  <FinishDot
+                                    key={f.id}
+                                    name={f.name}
+                                    color={f.color}
+                                    image={f.image}
+                                    price={f.price}
+                                    selected={exteriorFinishId === f.id}
+                                    onSelect={() => onExteriorFinishChange(f.id)}
+                                  />
+                                ))}
+                              </div>
+                            </div>
                           ))}
+                          <div>
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                              Madera Tecnológica
+                            </p>
+                            <p className="text-xs text-muted-foreground/60 mb-3">Solo exterior</p>
+                            <div className="flex gap-4 flex-wrap">
+                              {exteriorFinishes.map((f) => (
+                                <ExteriorSwatch
+                                  key={f.id}
+                                  name={f.name}
+                                  color={f.color}
+                                  selected={exteriorFinishId === f.id}
+                                  onSelect={() => onExteriorFinishChange(f.id)}
+                                />
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       )}
 
@@ -401,27 +432,30 @@ export function CustomizationPanel({
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
 function FinishDot({
-  name, color, price, selected, onSelect,
+  name, color, image, price, selected, onSelect,
 }: {
-  name: string; color: string; price: number; selected: boolean; onSelect: () => void;
+  name: string; color: string; image?: string; price: number; selected: boolean; onSelect: () => void;
 }) {
-  const isLight = ["#ede9e3", "#e2d8c8", "#f0eeec", "#eeeef0", "#c0bfba", "#c8b898", "#c4bba8"].includes(color);
   return (
     <button onClick={onSelect} title={price > 0 ? `${name} +$${price}` : name}
       className="group flex flex-col items-center gap-1.5 w-14"
     >
       <div
         className={cn(
-          "w-12 h-12 rounded-full transition-all duration-200 relative flex items-center justify-center flex-shrink-0",
+          "w-12 h-12 rounded-full transition-all duration-200 relative overflow-hidden flex items-center justify-center flex-shrink-0 border border-border/30",
           selected ? "ring-2 ring-primary ring-offset-2 ring-offset-background scale-110 shadow-md"
-                   : "hover:scale-110 hover:shadow-sm",
-          isLight && "border border-border/40"
+                   : "hover:scale-110 hover:shadow-sm"
         )}
-        style={{ backgroundColor: color }}
+        style={image ? undefined : { backgroundColor: color }}
       >
+        {image && (
+          <Image src={image} alt={name} fill className="object-cover" sizes="48px" />
+        )}
         {selected && (
-          <div className="w-6 h-6 rounded-full bg-primary/90 flex items-center justify-center shadow">
-            <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+          <div className="absolute inset-0 flex items-center justify-center bg-primary/20">
+            <div className="w-5 h-5 rounded-full bg-primary/90 flex items-center justify-center shadow">
+              <Check className="w-3 h-3 text-white" strokeWidth={3} />
+            </div>
           </div>
         )}
       </div>

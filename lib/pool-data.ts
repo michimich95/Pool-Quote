@@ -17,6 +17,7 @@ export interface FinishOption {
   name: string;
   collection: string;
   color: string;
+  image?: string;
   price: number;
 }
 
@@ -113,33 +114,33 @@ export const poolSpaSizes: PoolSize[] = [
 // Collections: Touch · Vogue · Relief · Alive · Kolos
 export const innerFinishes: FinishOption[] = [
   // TOUCH
-  { id: "elegance",  name: "Elegance",  collection: "Touch", color: "#1e1e1e", price: 0 },
-  { id: "prestige",  name: "Prestige",  collection: "Touch", color: "#636363", price: 0 },
-  { id: "origin",    name: "Origin",    collection: "Touch", color: "#c0bfba", price: 0 },
-  { id: "vanity",    name: "Vanity",    collection: "Touch", color: "#ede9e3", price: 0 },
-  { id: "relax",     name: "Relax",     collection: "Touch", color: "#d4a85a", price: 500 },
-  { id: "authentic", name: "Authentic", collection: "Touch", color: "#8a5840", price: 500 },
-  { id: "sublime",   name: "Sublime",   collection: "Touch", color: "#c8b898", price: 0 },
+  { id: "elegance",  name: "Elegance",  collection: "Touch", color: "#1e1e1e", image: "/materials/elegance.png",      price: 0 },
+  { id: "prestige",  name: "Prestige",  collection: "Touch", color: "#636363", image: "/materials/prestige.png",      price: 0 },
+  { id: "origin",    name: "Origin",    collection: "Touch", color: "#c0bfba", image: "/materials/origin.png",        price: 0 },
+  { id: "vanity",    name: "Vanity",    collection: "Touch", color: "#ede9e3", image: "/materials/vanity.png",        price: 0 },
+  { id: "relax",     name: "Relax",     collection: "Touch", color: "#d4a85a", image: "/materials/relax.png",         price: 500 },
+  { id: "authentic", name: "Authentic", collection: "Touch", color: "#8a5840", image: "/materials/authentic.png",     price: 500 },
+  { id: "sublime",   name: "Sublime",   collection: "Touch", color: "#c8b898", image: "/materials/sublime.png",       price: 0 },
   // VOGUE
-  { id: "urban",     name: "Urban",     collection: "Vogue", color: "#9da4a7", price: 0 },
-  { id: "tropical",  name: "Tropical",  collection: "Vogue", color: "#3c6b5c", price: 0 },
-  { id: "summer",    name: "Summer",    collection: "Vogue", color: "#00b4c4", price: 0 },
-  { id: "vintage",   name: "Vintage",   collection: "Vogue", color: "#e2d8c8", price: 0 },
+  { id: "urban",     name: "Urban",     collection: "Vogue", color: "#9da4a7", image: "/materials/urban.png",         price: 0 },
+  { id: "tropical",  name: "Tropical",  collection: "Vogue", color: "#3c6b5c", image: "/materials/tropical.png",      price: 0 },
+  { id: "summer",    name: "Summer",    collection: "Vogue", color: "#00b4c4", image: "/materials/summer.png",        price: 0 },
+  { id: "vintage",   name: "Vintage",   collection: "Vogue", color: "#e2d8c8", image: "/materials/vintage.png",       price: 0 },
   // RELIEF
-  { id: "r-black",       name: "Black",          collection: "Relief", color: "#1a1a1a", price: 0 },
-  { id: "r-dark-grey",   name: "Dark Grey",       collection: "Relief", color: "#484848", price: 0 },
-  { id: "r-light-grey",  name: "Light Grey",      collection: "Relief", color: "#b2b4b6", price: 0 },
-  { id: "caribbean",     name: "Caribbean Green", collection: "Relief", color: "#3ed0be", price: 500 },
-  { id: "adriatic",      name: "Adriatic Blue",   collection: "Relief", color: "#1a82d6", price: 500 },
-  { id: "r-white",       name: "White",           collection: "Relief", color: "#f0eeec", price: 0 },
+  { id: "r-black",       name: "Black",          collection: "Relief", color: "#1a1a1a", image: "/materials/black.png",         price: 0 },
+  { id: "r-dark-grey",   name: "Dark Grey",       collection: "Relief", color: "#484848", image: "/materials/dark-grey.png",     price: 0 },
+  { id: "r-light-grey",  name: "Light Grey",      collection: "Relief", color: "#b2b4b6", image: "/materials/light-grey.png",    price: 0 },
+  { id: "caribbean",     name: "Caribbean Green", collection: "Relief", color: "#3ed0be", image: "/materials/caribbean-green.png", price: 500 },
+  { id: "adriatic",      name: "Adriatic Blue",   collection: "Relief", color: "#1a82d6", image: "/materials/adriatic-blue.png", price: 500 },
+  { id: "r-white",       name: "White",           collection: "Relief", color: "#f0eeec", image: "/materials/white.png",         price: 0 },
   // ALIVE
-  { id: "chandra", name: "Chandra", collection: "Alive", color: "#7c9fb0", price: 800 },
-  { id: "prana",   name: "Prana",   collection: "Alive", color: "#2e5c48", price: 800 },
-  { id: "dhyana",  name: "Dhyana",  collection: "Alive", color: "#3574b8", price: 800 },
-  { id: "bhumi",   name: "Bhumi",   collection: "Alive", color: "#b89868", price: 800 },
+  { id: "chandra", name: "Chandra", collection: "Alive", color: "#7c9fb0", image: "/materials/chandra.png", price: 800 },
+  { id: "prana",   name: "Prana",   collection: "Alive", color: "#2e5c48", image: "/materials/prana.png",   price: 800 },
+  { id: "dhyana",  name: "Dhyana",  collection: "Alive", color: "#3574b8", image: "/materials/dhyana.png",  price: 800 },
+  { id: "bhumi",   name: "Bhumi",   collection: "Alive", color: "#b89868", image: "/materials/bhumi.png",   price: 800 },
   // KOLOS
-  { id: "delos",  name: "Delos",  collection: "Kolos", color: "#6ab2d2", price: 500 },
-  { id: "zephir", name: "Zephir", collection: "Kolos", color: "#eeeef0", price: 500 },
+  { id: "delos",  name: "Delos",  collection: "Kolos", color: "#6ab2d2", image: "/materials/delos.png",  price: 500 },
+  { id: "zephir", name: "Zephir", collection: "Kolos", color: "#eeeef0", image: "/materials/zephir.png", price: 500 },
 ];
 
 // ─── Exterior Composite Wood (Madera Tecnológica) ─────────────────────────────
@@ -254,7 +255,9 @@ export function calculateTotal(
   const sizes = getSizes(poolType);
   const size = sizes.find((s) => s.id === sizeId);
   const innerFinish = innerFinishes.find((f) => f.id === innerFinishId);
-  const exteriorFinish = exteriorFinishes.find((f) => f.id === exteriorFinishId);
+  const exteriorFinish =
+    exteriorFinishes.find((f) => f.id === exteriorFinishId) ??
+    innerFinishes.find((f) => f.id === exteriorFinishId);
 
   let total = size?.basePrice ?? 0;
   total += innerFinish?.price ?? 0;
