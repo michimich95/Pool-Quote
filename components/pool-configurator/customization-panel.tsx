@@ -213,7 +213,7 @@ export function CustomizationPanel({
                             >
                               <div className="aspect-[4/3] relative">
                                 <Image src={type.image} alt={type.name} fill className="object-cover" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/10" />
                                 {poolType === type.id && (
                                   <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-md">
                                     <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
@@ -359,7 +359,7 @@ export function CustomizationPanel({
                         disabled={!canProceed(step.id)}
                         onClick={handleContinue}
                       >
-                        {step.id === 5 ? "Ver Resumen" : "Continuar"}
+                        {step.id === 5 ? "Review" : "Next"}
                         <ChevronRight className="w-4 h-4" />
                       </Button>
                     </div>
@@ -394,7 +394,7 @@ export function CustomizationPanel({
 
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs text-muted-foreground">Total estimado</p>
+            <p className="text-xs text-muted-foreground">Estimated total</p>
             <p className={cn(
               "font-bold leading-none transition-all",
               quoteTotal > 0 ? "text-2xl text-primary" : "text-xl text-muted-foreground"
@@ -408,14 +408,14 @@ export function CustomizationPanel({
             size="lg"
             className="gap-2 flex-shrink-0"
           >
-            Solicitar Presupuesto
+            Request Quote
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
 
         {!canRequest && (
           <p className="text-xs text-muted-foreground/70">
-            Completa todos los pasos para solicitar presupuesto
+            Complete all steps to request a quote
           </p>
         )}
       </div>
