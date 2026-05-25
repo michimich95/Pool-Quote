@@ -263,21 +263,24 @@ export function CustomizationPanel({
                                   : "border-border hover:border-primary/40 bg-card"
                               )}
                             >
-                              <div className="flex items-start justify-between gap-1 mb-2">
-                                <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                              <div className="flex items-start justify-between gap-1 mb-3">
+                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                                   {s.name}
                                 </span>
                                 {sizeId === s.id && (
-                                  <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" strokeWidth={3} />
+                                  <Check className="w-4 h-4 text-primary flex-shrink-0" strokeWidth={3} />
                                 )}
                               </div>
-                              <p className="text-2xl font-bold text-primary leading-none">
+                              {/* Dimensions — hero */}
+                              <p className="text-xl font-bold text-foreground leading-tight">
+                                {s.lengthFt} × {s.widthFt}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{s.heightFt} de profundidad</p>
+                              {/* Price — secondary */}
+                              <p className="text-sm font-semibold text-primary mt-3">
                                 ${s.basePrice.toLocaleString()}
                               </p>
-                              <p className="text-sm text-foreground font-medium mt-2">
-                                {s.lengthFt} × {s.widthFt} × {s.heightFt}
-                              </p>
-                              <div className="mt-2.5 pt-2.5 border-t border-border/60 grid grid-cols-2 gap-x-2 gap-y-1">
+                              <div className="mt-2 pt-2 border-t border-border/60 grid grid-cols-2 gap-x-2 gap-y-1">
                                 <span className="text-xs text-muted-foreground">Volumen</span>
                                 <span className="text-xs text-muted-foreground text-right">{s.volumeLiters.toLocaleString()}L</span>
                                 <span className="text-xs text-muted-foreground">Peso</span>
