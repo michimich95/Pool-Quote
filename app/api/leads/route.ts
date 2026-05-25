@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   // 3. Send email notification
   const resend = new Resend(process.env.RESEND_API_KEY);
   await resend.emails.send({
-    from: "Benigni Pools <quotes@benignipool.com>",
+    from: "Benigni Pools <onboarding@resend.dev>",
     to: NOTIFY_EMAIL,
     replyTo: email || undefined,
     subject: `New Pool Quote Request — ${firstName} ${lastName}`,
