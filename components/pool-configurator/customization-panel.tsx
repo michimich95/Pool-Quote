@@ -113,15 +113,12 @@ export function CustomizationPanel({
   return (
     <>
       {/* ── Sticky price bar ── */}
-      <div className="flex-shrink-0 px-6 py-5 border-b border-border bg-card/60 backdrop-blur-sm">
-        <p className="text-xs uppercase tracking-widest font-bold text-muted-foreground mb-1">Estimated Total</p>
-        <p className={cn(
-          "font-bold leading-none transition-all duration-300",
-          quoteTotal > 0 ? "text-4xl text-primary" : "text-3xl text-muted-foreground/30"
-        )}>
-          {quoteTotal > 0 ? `$${quoteTotal.toLocaleString()}` : "—"}
+      <div className="flex-shrink-0 px-6 py-5 border-b-2 border-border bg-card">
+        <p className="text-xs uppercase tracking-widest font-bold text-muted-foreground mb-2">Estimated Total</p>
+        <p className="text-5xl font-bold leading-none text-primary transition-all duration-300">
+          ${quoteTotal.toLocaleString()}
         </p>
-        {canRequest && size && (
+        {size && (
           <p className="text-sm text-muted-foreground mt-2 leading-tight">
             {poolType === "miami" ? "Miami" : "Pool Spa"} · {size.name} · {size.lengthFt} × {size.widthFt}
             {selectedExtras.length > 0 && ` · ${selectedExtras.length} extra${selectedExtras.length > 1 ? "s" : ""}`}
