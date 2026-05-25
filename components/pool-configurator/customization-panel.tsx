@@ -116,18 +116,18 @@ export function CustomizationPanel({
   return (
     <>
       {/* ── Sticky price bar ── */}
-      <div className="flex-shrink-0 px-6 py-5 border-b-2 border-border bg-card">
-        <p className="text-xs uppercase tracking-widest font-bold text-muted-foreground mb-2">Estimated Total</p>
-        <p className="text-5xl font-bold leading-none text-primary transition-all duration-300">
+      <div className="flex-shrink-0 px-6 py-5 border-b border-border bg-background">
+        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mb-2">Estimated Total</p>
+        <p className="text-5xl font-black leading-none text-primary transition-all duration-300">
           ${(quoteTotal || miamiSizes[0].basePrice).toLocaleString()}
         </p>
         {size ? (
-          <p className="text-sm text-muted-foreground mt-2 leading-tight">
+          <p className="text-xs text-muted-foreground mt-2.5 leading-tight uppercase tracking-wider font-medium">
             {poolType === "miami" ? "Miami" : "Pool Spa"} · {size.name} · {size.lengthFt} × {size.widthFt}
             {selectedExtras.length > 0 && ` · ${selectedExtras.length} extra${selectedExtras.length > 1 ? "s" : ""}`}
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground mt-2">Starting price · configure to see your total</p>
+          <p className="text-xs text-muted-foreground mt-2.5 uppercase tracking-wider font-medium">Starting price · configure to see your total</p>
         )}
       </div>
 
@@ -181,7 +181,7 @@ export function CustomizationPanel({
                   >
                     <div className="min-w-0">
                       <p className={cn(
-                        "font-bold leading-tight transition-colors",
+                        "font-black leading-tight transition-colors uppercase tracking-wide",
                         status === "current"   && "text-foreground text-lg",
                         status === "completed" && "text-foreground text-base group-hover:text-primary",
                         status === "upcoming"  && "text-muted-foreground text-base"

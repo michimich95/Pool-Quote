@@ -66,14 +66,9 @@ export function PoolConfigurator() {
   return (
     <div className="bg-background flex flex-col lg:h-screen lg:overflow-hidden">
       {/* Header */}
-      <header className="flex-shrink-0 h-14 border-b border-border bg-background/95 backdrop-blur-sm z-40 flex items-center px-6 gap-3">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-          <svg className="w-5 h-5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-        </div>
-        <span className="text-base font-bold tracking-tight">BENIGNI POOLS</span>
-        <span className="hidden md:block ml-auto text-xs text-muted-foreground">
+      <header className="flex-shrink-0 h-14 border-b border-border bg-background z-40 flex items-center px-6 gap-3">
+        <span className="text-lg font-black tracking-widest uppercase text-foreground">BENIGNI POOLS</span>
+        <span className="hidden md:block ml-auto text-xs font-bold uppercase tracking-widest text-primary">
           Premium Elevated Pools
         </span>
       </header>
