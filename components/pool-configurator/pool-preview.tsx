@@ -13,8 +13,8 @@ interface PoolPreviewProps {
 
 export function PoolPreview({ poolType, exteriorFinish }: PoolPreviewProps) {
   const images = poolImages[poolType]?.[exteriorFinish as keyof typeof poolImages[typeof poolType]]
-    || poolImages[poolType]?.["terracotta"]
-    || poolImages.miami.terracotta;
+    || poolImages[poolType]?.["chocolate"]
+    || poolImages.miami.chocolate;
 
   const [currentIndex, setCurrentIndex] = useState(0);
 

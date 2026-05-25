@@ -67,7 +67,7 @@ export function PoolConfigurator() {
       ? calculateTotal(poolType, sizeId, innerFinishId, exteriorFinishId, selectedExtras)
       : 0;
 
-  const currentExterior = exteriorFinishId || "terracotta";
+  const currentExterior = exteriorFinishId || "chocolate";
   const currentType = poolType || "miami";
 
   return (
