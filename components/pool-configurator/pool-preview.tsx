@@ -27,14 +27,14 @@ export function PoolPreview({ poolType, exteriorFinish }: PoolPreviewProps) {
   };
 
   return (
-    <div className="relative w-full h-full bg-gradient-to-br from-muted/50 to-muted rounded-2xl overflow-hidden">
+    <div className="relative w-full h-full overflow-hidden">
       {/* Main Image */}
       <div className="relative w-full h-full">
         <Image
           src={images[currentIndex]}
           alt={`${poolType} pool preview`}
           fill
-          className="object-contain p-4"
+          className="object-cover transition-opacity duration-500"
           priority
         />
       </div>

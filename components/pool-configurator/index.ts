@@ -8,3 +8,4 @@ export { ExtrasStep } from "./extras-step";
 export { PoolPreview } from "./pool-preview";
 export { QuoteSummary } from "./quote-summary";
 export { ContactFormModal } from "./contact-form-modal";
+export { CustomizationPanel } from "./customization-panel";
