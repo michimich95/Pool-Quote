@@ -70,6 +70,7 @@ export function ContactFormModal({ open, onClose, quoteTotal, quoteData }: Conta
           pool_expected_budget:   form.pool_expected_budget,
           led_lighting:           "",
           pool_led_light:         "",
+          precio_final:           `$${quoteTotal.toLocaleString()}`,
         }),
       });
       const text = await res.text();
