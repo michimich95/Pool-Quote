@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X, CheckCircle, Loader2 } from "lucide-react";
+import { X, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -77,7 +77,11 @@ export function ContactFormModal({ open, onClose, quoteTotal, quoteData }: Conta
       let data: Record<string, unknown> = {};
       try { if (text) data = JSON.parse(text); } catch { /* empty */ }
       if (!res.ok) {
-        const msg = (data?.error as { message?: string } | undefined)?.message ?? "Submission failed";
+        const msg = typeof data?.error === "string"
+          ? data.error
+          : (data?.error as { message?: string } | undefined)?.message
+          ?? (data?.message as string | undefined)
+          ?? `Submission failed (${res.status})`;
         throw new Error(msg);
       }
       setSuccess(true);
@@ -103,132 +107,147 @@ export function ContactFormModal({ open, onClose, quoteTotal, quoteData }: Conta
   return (
     <Dialog.Root open={open} onOpenChange={(o) => !o && handleClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 data-[state=open]:animate-in data-[state=open]:fade-in" />
+        <Dialog.Overlay className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 data-[state=open]:animate-in data-[state=open]:fade-in" />
         <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg max-h-[90vh] flex flex-col bg-card border border-border rounded-2xl shadow-2xl data-[state=open]:animate-in data-[state=open]:fade-in data-[state=open]:zoom-in-95 focus:outline-none">
 
-          {/* Header */}
-          <div className="flex items-start justify-between p-6 border-b border-border flex-shrink-0">
-            <div>
-              <Dialog.Title className="text-xl font-bold">Request Your Quote</Dialog.Title>
-              <Dialog.Description className="text-muted-foreground text-sm mt-1">
-                Estimated total:{" "}
-                <span className="text-primary font-semibold">${quoteTotal.toLocaleString()}</span>
-                {" "}· {quoteData.pool_type} · {quoteData.pool_dimensions}
-              </Dialog.Description>
-            </div>
-            <Dialog.Close onClick={handleClose} className="text-muted-foreground hover:text-foreground transition-colors ml-4 mt-0.5">
-              <X className="w-5 h-5" />
-            </Dialog.Close>
-          </div>
-
           {success ? (
-            <div className="flex flex-col items-center text-center gap-4 p-8">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <CheckCircle className="w-8 h-8 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold mb-1">Request Sent!</h2>
-                <p className="text-muted-foreground text-sm">
-                  We&apos;ll be in touch shortly with your personalized quote.
-                </p>
-              </div>
-              <Button onClick={handleClose} className="w-full mt-2">Done</Button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-              <div className="flex-1 overflow-y-auto p-6 space-y-5">
-
-                {/* Contact info */}
+            /* ── Success screen ── */
+            <>
+              <Dialog.Title className="sr-only">Quote Sent</Dialog.Title>
+              <Dialog.Description className="sr-only">Your quote request has been submitted.</Dialog.Description>
+              <div className="flex flex-col items-center text-center gap-5 p-10">
+                <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center">
+                  <CheckCircle className="w-10 h-10 text-primary" />
+                </div>
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
-                    Contact Info
+                  <h2 className="text-2xl font-black uppercase tracking-wide mb-2">Request Sent!</h2>
+                  <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+                    We&apos;ll be in touch shortly with your personalized quote.
                   </p>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium block mb-1.5">Full name <span className="text-destructive">*</span></label>
-                      <input name="full_name" value={form.full_name} onChange={handleChange} required
-                        className={inputCls} placeholder="Jane Doe" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
+                </div>
+                <p className="text-3xl font-black text-primary">${quoteTotal.toLocaleString()}</p>
+                <Button onClick={handleClose} size="lg" className="w-full">Done</Button>
+              </div>
+            </>
+          ) : (
+            /* ── Form ── */
+            <>
+              {/* Header */}
+              <div className="flex items-start justify-between p-6 border-b border-border flex-shrink-0">
+                <div>
+                  <Dialog.Title className="text-xl font-black uppercase tracking-wide">Request Your Quote</Dialog.Title>
+                  <Dialog.Description className="text-muted-foreground text-sm mt-1">
+                    Estimated total:{" "}
+                    <span className="text-primary font-bold">${quoteTotal.toLocaleString()}</span>
+                    {" "}· {quoteData.pool_type} · {quoteData.pool_dimensions}
+                  </Dialog.Description>
+                </div>
+                <Dialog.Close onClick={handleClose} className="text-muted-foreground hover:text-foreground transition-colors ml-4 mt-0.5">
+                  <X className="w-5 h-5" />
+                </Dialog.Close>
+              </div>
+
+              <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+                <div className="flex-1 overflow-y-auto p-6 space-y-5">
+
+                  {/* Contact info */}
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                      Contact Info
+                    </p>
+                    <div className="space-y-3">
                       <div>
-                        <label className="text-sm font-medium block mb-1.5">Email <span className="text-destructive">*</span></label>
-                        <input name="email" type="email" value={form.email} onChange={handleChange} required
-                          className={inputCls} placeholder="jane@example.com" />
+                        <label className="text-sm font-medium block mb-1.5">Full name <span className="text-destructive">*</span></label>
+                        <input name="full_name" value={form.full_name} onChange={handleChange} required
+                          className={inputCls} placeholder="Jane Doe" />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium block mb-1.5">Phone <span className="text-destructive">*</span></label>
-                        <input name="phone" type="tel" value={form.phone} onChange={handleChange} required
-                          className={inputCls} placeholder="+1 555 000 0000" />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-sm font-medium block mb-1.5">Email <span className="text-destructive">*</span></label>
+                          <input name="email" type="email" value={form.email} onChange={handleChange} required
+                            className={inputCls} placeholder="jane@example.com" />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium block mb-1.5">Phone <span className="text-destructive">*</span></label>
+                          <input name="phone" type="tel" value={form.phone} onChange={handleChange} required
+                            className={inputCls} placeholder="+1 555 000 0000" />
+                        </div>
                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-sm font-medium block mb-1.5">City</label>
-                        <input name="city" value={form.city} onChange={handleChange}
-                          className={inputCls} placeholder="Miami" />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium block mb-1.5">Postal code</label>
-                        <input name="postal_code" value={form.postal_code} onChange={handleChange}
-                          className={inputCls} placeholder="33101" />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-sm font-medium block mb-1.5">City</label>
+                          <input name="city" value={form.city} onChange={handleChange}
+                            className={inputCls} placeholder="Miami" />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium block mb-1.5">Postal code</label>
+                          <input name="postal_code" value={form.postal_code} onChange={handleChange}
+                            className={inputCls} placeholder="33101" />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Project details */}
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
-                    Project Details
-                  </p>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium block mb-1.5">Installation location</label>
-                      <input name="pool_location" value={form.pool_location} onChange={handleChange}
-                        className={inputCls} placeholder="Address or area where the pool will be installed" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
+                  {/* Project details */}
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                      Project Details
+                    </p>
+                    <div className="space-y-3">
                       <div>
-                        <label className="text-sm font-medium block mb-1.5">Expected budget</label>
-                        <select name="pool_expected_budget" value={form.pool_expected_budget} onChange={handleChange}
+                        <label className="text-sm font-medium block mb-1.5">Installation location</label>
+                        <input name="pool_location" value={form.pool_location} onChange={handleChange}
+                          className={inputCls} placeholder="Address or area where the pool will be installed" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-sm font-medium block mb-1.5">Expected budget</label>
+                          <select name="pool_expected_budget" value={form.pool_expected_budget} onChange={handleChange}
+                            className={selectCls}>
+                            <option value="">Select range</option>
+                            <option value="Under $20,000">Under $20,000</option>
+                            <option value="$20,000 – $30,000">$20,000 – $30,000</option>
+                            <option value="$30,000 – $40,000">$30,000 – $40,000</option>
+                            <option value="Over $40,000">Over $40,000</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium block mb-1.5">Installation date</label>
+                          <input name="pool_installation_date" value={form.pool_installation_date} onChange={handleChange}
+                            className={inputCls} placeholder="e.g. Summer 2025" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium block mb-1.5">Best time to contact</label>
+                        <select name="preferred_time_to_contact" value={form.preferred_time_to_contact} onChange={handleChange}
                           className={selectCls}>
-                          <option value="">Select range</option>
-                          <option value="Under $20,000">Under $20,000</option>
-                          <option value="$20,000 – $30,000">$20,000 – $30,000</option>
-                          <option value="$30,000 – $40,000">$30,000 – $40,000</option>
-                          <option value="Over $40,000">Over $40,000</option>
+                          <option value="">Select a time</option>
+                          <option value="Morning (9am – 12pm)">Morning (9am – 12pm)</option>
+                          <option value="Afternoon (12pm – 5pm)">Afternoon (12pm – 5pm)</option>
+                          <option value="Evening (5pm – 8pm)">Evening (5pm – 8pm)</option>
                         </select>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium block mb-1.5">Installation date</label>
-                        <input name="pool_installation_date" value={form.pool_installation_date} onChange={handleChange}
-                          className={inputCls} placeholder="e.g. Summer 2025" />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium block mb-1.5">Best time to contact</label>
-                      <select name="preferred_time_to_contact" value={form.preferred_time_to_contact} onChange={handleChange}
-                        className={selectCls}>
-                        <option value="">Select a time</option>
-                        <option value="Morning (9am – 12pm)">Morning (9am – 12pm)</option>
-                        <option value="Afternoon (12pm – 5pm)">Afternoon (12pm – 5pm)</option>
-                        <option value="Evening (5pm – 8pm)">Evening (5pm – 8pm)</option>
-                      </select>
                     </div>
                   </div>
+
+                  {/* Error */}
+                  {error && (
+                    <div className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4">
+                      <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-destructive leading-snug">{error}</p>
+                    </div>
+                  )}
                 </div>
 
-                {error && <p className="text-sm text-destructive">{error}</p>}
-              </div>
-
-              {/* Sticky footer */}
-              <div className="p-6 pt-4 border-t border-border flex-shrink-0">
-                <Button type="submit" disabled={loading} className="w-full gap-2">
-                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {loading ? "Sending…" : "Send Quote Request"}
-                </Button>
-              </div>
-            </form>
+                {/* Sticky footer */}
+                <div className="p-6 pt-4 border-t border-border flex-shrink-0">
+                  <Button type="submit" disabled={loading} size="lg" className="w-full gap-2">
+                    {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {loading ? "Sending…" : "Send Quote Request"}
+                  </Button>
+                </div>
+              </form>
+            </>
           )}
         </Dialog.Content>
       </Dialog.Portal>

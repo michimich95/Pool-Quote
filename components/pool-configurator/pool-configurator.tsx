@@ -38,7 +38,9 @@ export function PoolConfigurator() {
     const sizes = getSizes(poolType!);
     const size = sizes.find((s) => s.id === sizeId);
     const inner = innerFinishes.find((f) => f.id === innerFinishId);
-    const exterior = exteriorFinishes.find((f) => f.id === exteriorFinishId);
+    const exteriorWood = exteriorFinishes.find((f) => f.id === exteriorFinishId);
+    const exteriorLamina = innerFinishes.find((f) => f.id === exteriorFinishId);
+    const exteriorName = exteriorWood?.name ?? (exteriorLamina ? `${exteriorLamina.name} (${exteriorLamina.collection})` : "");
     const extras = selectedExtras
       .map((id) => extraOptions.find((e) => e.id === id)?.name)
       .filter(Boolean)
@@ -49,7 +51,7 @@ export function PoolConfigurator() {
       pool_dimensions: size ? `${size.lengthFt} × ${size.widthFt} × ${size.heightFt}` : "",
       pool_glass_size: poolType === "miami" ? "6' 7\" × 10\"" : "5' × 10\"",
       pool_finishes_interior: inner ? `${inner.name} (${inner.collection})` : "",
-      pool_finishes_exterior: exterior?.name ?? "",
+      pool_finishes_exterior: exteriorName,
       pool_premium_features: extras,
       pool_expected_budget: "",
     };

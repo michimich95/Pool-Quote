@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  if (!process.env.GHL_API_KEY || !process.env.GHL_LOCATION_ID) {
+    console.error("[leads] Missing env vars — GHL_API_KEY or GHL_LOCATION_ID not set");
+    return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
 
   const headers: Record<string, string> = {
     Authorization: `Bearer ${process.env.GHL_API_KEY}`,
@@ -10,18 +20,27 @@ export async function POST(req: NextRequest) {
   };
 
   // 1. Search for existing contact by email
-  const searchRes = await fetch(
-    `https://services.leadconnectorhq.com/contacts/?query=${encodeURIComponent(body.email)}&locationId=${process.env.GHL_LOCATION_ID}`,
-    { headers }
-  );
-  const searchText = await searchRes.text();
-  let searchData: { contacts?: { id: string }[] } = {};
-  try { if (searchText) searchData = JSON.parse(searchText); } catch { /* empty */ }
-  const existingContact = searchData.contacts?.[0];
+  let existingContactId: string | null = null;
+  try {
+    const searchRes = await fetch(
+      `https://services.leadconnectorhq.com/contacts/?query=${encodeURIComponent(String(body.email ?? ""))}&locationId=${process.env.GHL_LOCATION_ID}`,
+      { headers }
+    );
+    const searchText = await searchRes.text();
+    console.log("[leads] search status:", searchRes.status);
+    if (searchRes.ok && searchText) {
+      const searchData = JSON.parse(searchText);
+      existingContactId = searchData?.contacts?.[0]?.id ?? null;
+    } else if (!searchRes.ok) {
+      console.error("[leads] search failed:", searchRes.status, searchText.slice(0, 300));
+    }
+  } catch (err) {
+    console.error("[leads] search exception:", err);
+  }
 
   // 2. Build contact payload
-  const nameParts = (body.full_name ?? "").trim().split(" ");
-  const firstName = nameParts[0];
+  const nameParts = String(body.full_name ?? "").trim().split(" ");
+  const firstName = nameParts[0] ?? "";
   const lastName = nameParts.slice(1).join(" ");
 
   const contactData = {
@@ -53,36 +72,47 @@ export async function POST(req: NextRequest) {
   // 3. Create or update contact
   let contactId: string;
 
-  if (existingContact) {
+  if (existingContactId) {
     const updateRes = await fetch(
-      `https://services.leadconnectorhq.com/contacts/${existingContact.id}`,
+      `https://services.leadconnectorhq.com/contacts/${existingContactId}`,
       { method: "PUT", headers, body: JSON.stringify(contactData) }
     );
     const updateText = await updateRes.text();
-    let updateData: Record<string, unknown> = {};
-    try { if (updateText) updateData = JSON.parse(updateText); } catch { /* empty */ }
+    console.log("[leads] update status:", updateRes.status, updateText.slice(0, 300));
     if (!updateRes.ok) {
-      return NextResponse.json({ error: updateData }, { status: 500 });
+      return NextResponse.json(
+        { error: `GHL update failed (${updateRes.status})`, details: updateText },
+        { status: 500 }
+      );
     }
-    contactId = existingContact.id;
+    contactId = existingContactId;
   } else {
     const createRes = await fetch(
       "https://services.leadconnectorhq.com/contacts/",
       { method: "POST", headers, body: JSON.stringify(contactData) }
     );
     const createText = await createRes.text();
+    console.log("[leads] create status:", createRes.status, createText.slice(0, 300));
+    if (!createRes.ok) {
+      return NextResponse.json(
+        { error: `GHL create failed (${createRes.status})`, details: createText },
+        { status: 500 }
+      );
+    }
     let createData: { contact?: { id: string } } = {};
     try { if (createText) createData = JSON.parse(createText); } catch { /* empty */ }
-    if (!createRes.ok) {
-      return NextResponse.json({ error: createData }, { status: 500 });
+    const newId = createData.contact?.id;
+    if (!newId) {
+      console.error("[leads] no contact id in create response:", createText);
+      return NextResponse.json({ error: "No contact ID returned by GHL" }, { status: 500 });
     }
-    contactId = createData.contact!.id;
+    contactId = newId;
   }
 
   // 4. Save quote as a timeline note
   const premiumFeatures = Array.isArray(body.premium_features)
-    ? body.premium_features.join(", ")
-    : body.premium_features || "-";
+    ? (body.premium_features as string[]).join(", ")
+    : String(body.premium_features || "-");
 
   const quoteNote = `
 🏊 NUEVO QUOTE SOLICITADO
@@ -115,11 +145,10 @@ PROYECTO
     `https://services.leadconnectorhq.com/contacts/${contactId}/notes`,
     { method: "POST", headers, body: JSON.stringify({ body: quoteNote }) }
   );
-
   if (!noteRes.ok) {
-    // Contact saved fine — note failure is non-blocking
-    console.error("Error saving note:", await noteRes.text());
+    console.error("[leads] note failed:", noteRes.status, await noteRes.text());
   }
 
-  return NextResponse.json({ success: true, contactId, isNew: !existingContact });
+  console.log("[leads] success — contactId:", contactId, "isNew:", !existingContactId);
+  return NextResponse.json({ success: true, contactId, isNew: !existingContactId });
 }
