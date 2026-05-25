@@ -369,19 +369,6 @@ export function CustomizationPanel({
                         </div>
                       )}
 
-                      {/* Continue / Request Quote button */}
-                      <Button
-                        size="sm"
-                        className="w-full gap-1.5 mt-1"
-                        disabled={step.id === 5 ? !canRequest : !canProceed(step.id)}
-                        onClick={step.id === 5 ? onRequestQuote : handleContinue}
-                      >
-                        {step.id === 5 ? "Request Quote" : "Next"}
-                        {step.id === 5
-                          ? <ArrowRight className="w-4 h-4" />
-                          : <ChevronRight className="w-4 h-4" />
-                        }
-                      </Button>
                     </div>
                   )}
                 </div>
@@ -391,6 +378,21 @@ export function CustomizationPanel({
         </div>
       </div>
 
+      {/* ── Single sticky CTA ── */}
+      <div className="flex-shrink-0 p-4 border-t border-border bg-card/90 backdrop-blur-sm">
+        <Button
+          size="lg"
+          className="w-full gap-2 text-base"
+          disabled={currentStep === 5 ? !canRequest : !canProceed(currentStep)}
+          onClick={currentStep === 5 ? onRequestQuote : handleContinue}
+        >
+          {currentStep === 5 ? "Request Quote" : "Next"}
+          {currentStep === 5
+            ? <ArrowRight className="w-5 h-5" />
+            : <ChevronRight className="w-5 h-5" />
+          }
+        </Button>
+      </div>
     </>
   );
 }
