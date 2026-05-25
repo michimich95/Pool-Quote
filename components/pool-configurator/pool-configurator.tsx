@@ -125,7 +125,7 @@ export function PoolConfigurator() {
         </div>
 
         {/* Right: customization panel */}
-        <div className="w-full lg:w-1/3 lg:border-l border-border flex flex-col lg:overflow-hidden">
+        <div className="w-full lg:w-2/5 lg:border-l border-border flex flex-col lg:overflow-hidden">
           <CustomizationPanel
             poolType={poolType}
             sizeId={sizeId}
