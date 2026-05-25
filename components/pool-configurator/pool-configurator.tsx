@@ -12,6 +12,7 @@ import {
   exteriorFinishes,
   extraOptions,
 } from "@/lib/pool-data";
+import { type QuoteData } from "./contact-form-modal";
 
 export function PoolConfigurator() {
   const [poolType, setPoolType] = useState<PoolType | null>(null);
@@ -33,33 +34,25 @@ export function PoolConfigurator() {
     );
   };
 
-  const buildQuoteNote = () => {
+  const buildQuoteData = (): QuoteData => {
     const sizes = getSizes(poolType!);
     const size = sizes.find((s) => s.id === sizeId);
     const inner = innerFinishes.find((f) => f.id === innerFinishId);
     const exterior = exteriorFinishes.find((f) => f.id === exteriorFinishId);
     const extras = selectedExtras
       .map((id) => extraOptions.find((e) => e.id === id)?.name)
-      .filter(Boolean);
-    const total = calculateTotal(
-      poolType!,
-      sizeId!,
-      innerFinishId!,
-      exteriorFinishId!,
-      selectedExtras
-    );
+      .filter(Boolean)
+      .join(", ");
 
-    return [
-      "Pool Quote Request",
-      "",
-      `Model: ${poolType === "miami" ? "Miami" : "Pool Spa"} — ${size?.name}`,
-      `Size: ${size?.lengthFt} × ${size?.widthFt}`,
-      `Inner Finish: ${inner?.name} (${inner?.category === "mosaic" ? "Mosaic" : "Solid Color"})`,
-      `Exterior Finish: ${exterior?.name}`,
-      `Extras: ${extras.length > 0 ? extras.join(", ") : "None"}`,
-      "",
-      `Estimated Total: $${total.toLocaleString()}`,
-    ].join("\n");
+    return {
+      pool_type: poolType === "miami" ? "Miami" : "Pool Spa",
+      pool_dimensions: size ? `${size.lengthFt} × ${size.widthFt} × ${size.heightFt}` : "",
+      pool_glass_size: poolType === "miami" ? "6' 7\" × 10\"" : "5' × 10\"",
+      pool_finishes_interior: inner ? `${inner.name} (${inner.collection})` : "",
+      pool_finishes_exterior: exterior?.name ?? "",
+      pool_premium_features: extras,
+      pool_expected_budget: "",
+    };
   };
 
   const quoteTotal =
@@ -153,7 +146,10 @@ export function PoolConfigurator() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         quoteTotal={quoteTotal}
-        quoteNote={modalOpen ? buildQuoteNote() : ""}
+        quoteData={modalOpen && poolType && sizeId && innerFinishId && exteriorFinishId
+          ? buildQuoteData()
+          : { pool_type: "", pool_dimensions: "", pool_glass_size: "", pool_finishes_interior: "", pool_finishes_exterior: "", pool_premium_features: "", pool_expected_budget: "" }
+        }
       />
     </div>
   );
