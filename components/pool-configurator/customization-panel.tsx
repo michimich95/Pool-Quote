@@ -12,6 +12,7 @@ import {
   exteriorFinishes,
   extraOptions,
   calculateTotal,
+  miamiSizes,
 } from "@/lib/pool-data";
 
 const poolTypeCards = [
@@ -116,13 +117,15 @@ export function CustomizationPanel({
       <div className="flex-shrink-0 px-6 py-5 border-b-2 border-border bg-card">
         <p className="text-xs uppercase tracking-widest font-bold text-muted-foreground mb-2">Estimated Total</p>
         <p className="text-5xl font-bold leading-none text-primary transition-all duration-300">
-          ${quoteTotal.toLocaleString()}
+          ${(quoteTotal || miamiSizes[0].basePrice).toLocaleString()}
         </p>
-        {size && (
+        {size ? (
           <p className="text-sm text-muted-foreground mt-2 leading-tight">
             {poolType === "miami" ? "Miami" : "Pool Spa"} · {size.name} · {size.lengthFt} × {size.widthFt}
             {selectedExtras.length > 0 && ` · ${selectedExtras.length} extra${selectedExtras.length > 1 ? "s" : ""}`}
           </p>
+        ) : (
+          <p className="text-sm text-muted-foreground mt-2">Starting price · configure to see your total</p>
         )}
       </div>
 
@@ -272,7 +275,7 @@ export function CustomizationPanel({
                               <p className="text-xl font-bold text-foreground leading-tight">
                                 {s.lengthFt} × {s.widthFt}
                               </p>
-                              <p className="text-xs text-muted-foreground mt-0.5">{s.heightFt} de profundidad</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{s.heightFt} depth · feet</p>
                               {/* Price — secondary */}
                               <p className="text-sm font-semibold text-primary mt-3">
                                 ${s.basePrice.toLocaleString()}

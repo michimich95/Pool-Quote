@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
   // 1. Search for existing contact by email
   const searchRes = await fetch(
-    `https://services.leadconnectorhq.com/contacts/?email=${encodeURIComponent(body.email)}&locationId=${process.env.GHL_LOCATION_ID}`,
+    `https://services.leadconnectorhq.com/contacts/?query=${encodeURIComponent(body.email)}&locationId=${process.env.GHL_LOCATION_ID}`,
     { headers }
   );
   const searchText = await searchRes.text();
