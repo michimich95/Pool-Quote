@@ -112,6 +112,23 @@ export function CustomizationPanel({
 
   return (
     <>
+      {/* ── Sticky price bar ── */}
+      <div className="flex-shrink-0 px-5 py-4 border-b border-border bg-card/60 backdrop-blur-sm">
+        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground mb-1">Estimated Total</p>
+        <p className={cn(
+          "font-bold leading-none transition-all duration-300",
+          quoteTotal > 0 ? "text-3xl text-primary" : "text-2xl text-muted-foreground/30"
+        )}>
+          {quoteTotal > 0 ? `$${quoteTotal.toLocaleString()}` : "—"}
+        </p>
+        {canRequest && size && (
+          <p className="text-xs text-muted-foreground mt-1.5 leading-tight">
+            {poolType === "miami" ? "Miami" : "Pool Spa"} · {size.name} · {size.lengthFt} × {size.widthFt}
+            {selectedExtras.length > 0 && ` · ${selectedExtras.length} extra${selectedExtras.length > 1 ? "s" : ""}`}
+          </p>
+        )}
+      </div>
+
       {/* Scrollable stepper */}
       <div className="flex-1 overflow-y-auto">
         <div className="px-5 py-4">
@@ -352,15 +369,18 @@ export function CustomizationPanel({
                         </div>
                       )}
 
-                      {/* Continue button */}
+                      {/* Continue / Request Quote button */}
                       <Button
                         size="sm"
                         className="w-full gap-1.5 mt-1"
-                        disabled={!canProceed(step.id)}
-                        onClick={handleContinue}
+                        disabled={step.id === 5 ? !canRequest : !canProceed(step.id)}
+                        onClick={step.id === 5 ? onRequestQuote : handleContinue}
                       >
-                        {step.id === 5 ? "Review" : "Next"}
-                        <ChevronRight className="w-4 h-4" />
+                        {step.id === 5 ? "Request Quote" : "Next"}
+                        {step.id === 5
+                          ? <ArrowRight className="w-4 h-4" />
+                          : <ChevronRight className="w-4 h-4" />
+                        }
                       </Button>
                     </div>
                   )}
@@ -371,54 +391,6 @@ export function CustomizationPanel({
         </div>
       </div>
 
-      {/* ── Pinned quote + CTA ── */}
-      <div className="border-t border-border p-5 bg-card/90 backdrop-blur-sm flex-shrink-0 space-y-4">
-        {/* Mini price breakdown */}
-        {canRequest && (
-          <div className="space-y-1">
-            {size && (
-              <QuoteLine
-                label={`${poolType === "miami" ? "Miami" : "Pool Spa"} ${size.name}`}
-                value={`$${size.basePrice.toLocaleString()}`}
-              />
-            )}
-            {innerFinish && innerFinish.price > 0 && (
-              <QuoteLine label={`Lámina ${innerFinish.name}`} value={`+$${innerFinish.price.toLocaleString()}`} />
-            )}
-            {selectedExtras.map((id) => {
-              const e = extraOptions.find((x) => x.id === id);
-              return e ? <QuoteLine key={id} label={e.name} value={`+$${e.price.toLocaleString()}`} /> : null;
-            })}
-          </div>
-        )}
-
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs text-muted-foreground">Estimated total</p>
-            <p className={cn(
-              "font-bold leading-none transition-all",
-              quoteTotal > 0 ? "text-2xl text-primary" : "text-xl text-muted-foreground"
-            )}>
-              {quoteTotal > 0 ? `$${quoteTotal.toLocaleString()}` : "—"}
-            </p>
-          </div>
-          <Button
-            onClick={onRequestQuote}
-            disabled={!canRequest}
-            size="lg"
-            className="gap-2 flex-shrink-0"
-          >
-            Request Quote
-            <ArrowRight className="w-4 h-4" />
-          </Button>
-        </div>
-
-        {!canRequest && (
-          <p className="text-xs text-muted-foreground/70">
-            Complete all steps to request a quote
-          </p>
-        )}
-      </div>
     </>
   );
 }
@@ -497,11 +469,3 @@ function ExteriorSwatch({
   );
 }
 
-function QuoteLine({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between text-xs text-muted-foreground">
-      <span className="truncate mr-4">{label}</span>
-      <span className="font-medium text-foreground flex-shrink-0">{value}</span>
-    </div>
-  );
-}
