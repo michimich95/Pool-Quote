@@ -12,7 +12,8 @@ import { ExteriorFinishStep } from "./exterior-finish-step";
 import { ExtrasStep } from "./extras-step";
 import { PoolPreview } from "./pool-preview";
 import { QuoteSummary } from "./quote-summary";
-import { type PoolType, calculateTotal, getSizes, innerFinishes, exteriorFinishes } from "@/lib/pool-data";
+import { ContactFormModal } from "./contact-form-modal";
+import { type PoolType, calculateTotal, getSizes, innerFinishes, exteriorFinishes, extraOptions } from "@/lib/pool-data";
 
 const steps = [
   { id: 1, name: "Pool Type" },
@@ -29,6 +30,7 @@ export function PoolConfigurator() {
   const [innerFinishId, setInnerFinishId] = useState<string | null>(null);
   const [exteriorFinishId, setExteriorFinishId] = useState<string | null>(null);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const canGoNext = () => {
     switch (currentStep) {
@@ -79,22 +81,32 @@ export function PoolConfigurator() {
     }
   };
 
-  const handleRequestQuote = () => {
-    const total = calculateTotal(
-      poolType!,
-      sizeId!,
-      innerFinishId!,
-      exteriorFinishId!,
-      selectedExtras
-    );
-
+  const buildQuoteNote = () => {
     const sizes = getSizes(poolType!);
     const size = sizes.find((s) => s.id === sizeId);
     const inner = innerFinishes.find((f) => f.id === innerFinishId);
     const exterior = exteriorFinishes.find((f) => f.id === exteriorFinishId);
+    const extras = selectedExtras.map((id) => extraOptions.find((e) => e.id === id)?.name).filter(Boolean);
+    const total = calculateTotal(poolType!, sizeId!, innerFinishId!, exteriorFinishId!, selectedExtras);
 
-    alert(`Thank you for your interest!\n\nYour configuration:\n- Pool: ${poolType === "miami" ? "Miami" : "Pool Spa"} ${size?.name}\n- Size: ${size?.lengthFt} x ${size?.widthFt}\n- Inner: ${inner?.name}\n- Exterior: ${exterior?.name}\n- Extras: ${selectedExtras.length > 0 ? selectedExtras.join(", ") : "None"}\n\nEstimated Total: $${total.toLocaleString()}\n\nWe will contact you shortly!`);
+    return [
+      "Pool Quote Request",
+      "",
+      `Model: ${poolType === "miami" ? "Miami" : "Pool Spa"} — ${size?.name}`,
+      `Size: ${size?.lengthFt} × ${size?.widthFt}`,
+      `Inner Finish: ${inner?.name} (${inner?.category === "mosaic" ? "Mosaic" : "Solid Color"})`,
+      `Exterior Finish: ${exterior?.name}`,
+      `Extras: ${extras.length > 0 ? extras.join(", ") : "None"}`,
+      "",
+      `Estimated Total: $${total.toLocaleString()}`,
+    ].join("\n");
   };
+
+  const quoteTotal = poolType && sizeId && innerFinishId && exteriorFinishId
+    ? calculateTotal(poolType, sizeId, innerFinishId, exteriorFinishId, selectedExtras)
+    : 0;
+
+  const handleRequestQuote = () => setModalOpen(true);
 
   return (
     <div className="min-h-screen bg-background">
@@ -235,6 +247,13 @@ export function PoolConfigurator() {
           />
         </div>
       </main>
+
+      <ContactFormModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        quoteTotal={quoteTotal}
+        quoteNote={modalOpen ? buildQuoteNote() : ""}
+      />
     </div>
   );
 }
